@@ -21,6 +21,7 @@
 <style>{{CSS}}</style>
 </head>
 <body>
+{{SPRITE}}
 <header class="top wrap">
   <a class="logo" href="{{MAIN_SITE}}"><img src="/logo.svg" alt="{{NAME_AR}} {{NAME}}" width="278" height="43"></a>
   <a class="btn" href="{{WA}}" target="_blank" rel="noopener">احصل على استشارتك</a>
@@ -33,13 +34,14 @@
     <p class="lead">{{INTRO}}</p>
     <dl class="stats">
       <div><dt>فيديو</dt><dd>{{COUNT}}</dd></div>
-      <div><dt>مجال</dt><dd>{{INDUSTRY_COUNT}}</dd></div>
+      <div><dt>طولي</dt><dd>{{COUNT_V}}</dd></div>
+      <div><dt>عرضي</dt><dd>{{COUNT_H}}</dd></div>
     </dl>
   </section>
 
   <nav class="bar" aria-label="تصفية الأعمال">
     <div class="wrap bar-in">
-      <div class="chips" role="group" aria-label="المجال">{{CHIPS}}</div>
+      <h2 class="bar-t">كل الأعمال</h2>
       <div class="seg" role="group" aria-label="المقاس">
         <button type="button" data-f="all" aria-pressed="true">الكل</button>
         <button type="button" data-f="v" aria-pressed="false">طولي</button>
@@ -72,6 +74,7 @@
     <div class="lb-bar">
       <button type="button" data-act="prev" aria-label="السابق">→</button>
       <span id="lbt"></span>
+      <a id="lbwa" class="lbwa" href="#" target="_blank" rel="noopener">{{WA_ICON}}<span>أريد فيديو مثله</span></a>
       <button type="button" data-act="share" class="share">نسخ الرابط</button>
       <button type="button" data-act="next" aria-label="التالي">←</button>
     </div>
