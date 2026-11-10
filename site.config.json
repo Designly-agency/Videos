@@ -1,0 +1,59 @@
+{
+  "brand": {
+    "name": "Designly",
+    "tagline": "أعمالنا في الفيديو",
+    "headline": "أنت لست مجرد عميل، أنت *شريك نجاح*.",
+    "intro": "إعلانات وريلز وموشن جرافيك صمّمناها لشركاء نجاحنا في مجالات مختلفة. اختر مجالك وشاهد بنفسك.",
+    "accent": "#AF8B45",
+    "siteUrl": "https://videos.designly-agency.com",
+    "mainSite": "https://www.designly-agency.com",
+    "whatsapp": "966550560858",
+    "whatsappMessage": "مرحبًا ديزاينلي، شاهدت أعمالكم في الفيديو وأرغب في بدء مشروع.",
+    "instagram": "https://www.instagram.com/designly.sa/",
+    "nameAr": "ديزاينلي",
+    "tiktok": "https://www.tiktok.com/@designly.sa",
+    "x": "https://x.com/Designly_agency"
+  },
+  "industries": [
+    {
+      "collection": "Real Estate",
+      "slug": "real-estate",
+      "label": "عقارات"
+    },
+    {
+      "collection": "Food",
+      "slug": "food",
+      "label": "مطاعم وكافيهات"
+    },
+    {
+      "collection": "Beauty",
+      "slug": "beauty",
+      "label": "طبي وتجميل"
+    },
+    {
+      "collection": "Fashion",
+      "slug": "fashion",
+      "label": "فاشون"
+    },
+    {
+      "collection": "Tech",
+      "slug": "tech",
+      "label": "تقنية"
+    },
+    {
+      "collection": "Education",
+      "slug": "education",
+      "label": "تعليم"
+    },
+    {
+      "collection": "Products",
+      "slug": "products",
+      "label": "إعلانات منتجات"
+    },
+    {
+      "collection": "Motion",
+      "slug": "motion",
+      "label": "موشن جرافيك"
+    }
+  ]
+}

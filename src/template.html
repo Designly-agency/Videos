@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{NAME_AR}} {{NAME}} | {{TAGLINE}}</title>
+<meta name="description" content="{{INTRO}}">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="{{SITE_URL}}/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{NAME}} | {{TAGLINE}}">
+<meta property="og:description" content="{{INTRO}}">
+<meta property="og:url" content="{{SITE_URL}}/">
+<meta property="og:image" content="{{SITE_URL}}/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+{{PRECONNECT}}
+<link rel="preconnect" href="https://iframe.mediadelivery.net">
+<link rel="preload" href="/fonts/alexandria-ar.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/readex-ar.woff2" as="font" type="font/woff2" crossorigin>
+<style>{{CSS}}</style>
+</head>
+<body>
+<header class="top wrap">
+  <a class="logo" href="{{MAIN_SITE}}"><img src="/logo.svg" alt="{{NAME_AR}} {{NAME}}" width="278" height="43"></a>
+  <a class="btn" href="{{WA}}" target="_blank" rel="noopener">احصل على استشارتك</a>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="eyebrow">{{TAGLINE}}</p>
+    <h1>{{HEADLINE_HTML}}</h1>
+    <p class="lead">{{INTRO}}</p>
+    <dl class="stats">
+      <div><dt>فيديو</dt><dd>{{COUNT}}</dd></div>
+      <div><dt>مجال</dt><dd>{{INDUSTRY_COUNT}}</dd></div>
+    </dl>
+  </section>
+
+  <nav class="bar" aria-label="تصفية الأعمال">
+    <div class="wrap bar-in">
+      <div class="chips" role="group" aria-label="المجال">{{CHIPS}}</div>
+      <div class="seg" role="group" aria-label="المقاس">
+        <button type="button" data-f="all" aria-pressed="true">الكل</button>
+        <button type="button" data-f="v" aria-pressed="false">طولي</button>
+        <button type="button" data-f="h" aria-pressed="false">عرضي</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="wrap" aria-label="الفيديوهات">
+    <ul class="grid" id="grid">{{CARDS}}</ul>
+    <p class="empty" id="empty" hidden>لا توجد فيديوهات بهذا الفلتر حاليًا.</p>
+  </section>
+
+  <section class="cta wrap">
+    <h2>نصمم رؤيتك، ونحقق أهدافك</h2>
+    <p>تواصل معنا عبر واتساب وأخبرنا عن مشروعك، واحصل على استشارتك الآن.</p>
+    <a class="btn big" href="{{WA}}" target="_blank" rel="noopener">تواصل عبر واتساب</a>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <span>© {{YEAR}} {{NAME_AR}} للتصميم والخدمات التسويقية</span>
+  <span><a href="{{MAIN_SITE}}">الموقع</a> · <a href="{{INSTAGRAM}}" target="_blank" rel="noopener">Instagram</a> · <a href="{{TIKTOK}}" target="_blank" rel="noopener">TikTok</a> · <a href="{{X}}" target="_blank" rel="noopener">X</a></span>
+</footer>
+
+<dialog id="lb" aria-label="مشغل الفيديو">
+  <div class="lb-in">
+    <button type="button" class="x" data-act="close" aria-label="إغلاق">✕</button>
+    <div class="frame" id="frame"></div>
+    <div class="lb-bar">
+      <button type="button" data-act="prev" aria-label="السابق">→</button>
+      <span id="lbt"></span>
+      <button type="button" data-act="share" class="share">نسخ الرابط</button>
+      <button type="button" data-act="next" aria-label="التالي">←</button>
+    </div>
+  </div>
+</dialog>
+
+<script id="data" type="application/json">{{DATA}}</script>
+<script>{{JS}}</script>
+</body>
+</html>
