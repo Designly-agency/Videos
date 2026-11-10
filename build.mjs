@@ -151,7 +151,7 @@ await cp(new URL("public", ROOT), new URL("dist", ROOT), { recursive: true });
 await writeFile(new URL("dist/index.html", ROOT), html);
 await writeFile(
   new URL("dist/_headers", ROOT),
-  `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/\n  Cache-Control: public, max-age=0, s-maxage=600, stale-while-revalidate=86400\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/logo.svg\n  Cache-Control: public, max-age=86400\n`
+  `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/\n  Cache-Control: public, max-age=0, must-revalidate\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/logo.svg\n  Cache-Control: public, max-age=86400\n`
 );
 await writeFile(new URL("dist/robots.txt", ROOT), `User-agent: *\nAllow: /\n`);
 await writeFile(
