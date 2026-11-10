@@ -14,6 +14,11 @@ const ROOT = new URL(".", import.meta.url);
 const cfg = JSON.parse(await readFile(new URL("site.config.json", ROOT), "utf8"));
 const { BUNNY_LIBRARY_ID: LIB, BUNNY_API_KEY: KEY, BUNNY_CDN_HOST: CDN } = process.env;
 const DEMO = !(LIB && KEY && CDN);
+// Diagnostics: show which variables the build can see (names only, never values)
+console.log(
+  "env check →",
+  ["BUNNY_LIBRARY_ID", "BUNNY_API_KEY", "BUNNY_CDN_HOST"].map((k) => `${k}: ${process.env[k] ? "✓" : "✗ missing"}`).join(" | ")
+);
 const b = cfg.brand;
 
 // ---------- data ----------
