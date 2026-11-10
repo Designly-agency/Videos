@@ -46,6 +46,10 @@ async function fetchAll(path) {
 //   "client | title" → client shown as a small label
 function parseTitle(raw) {
   let t = (raw || "").replace(/\.(mp4|mov|m4v|webm)$/i, "").trim();
+  // Filename-looking titles (no Arabic, no spaces) → tidy: drop sizes like 9x16 / 1080x1920, dashes → spaces
+  if (!/[\u0600-\u06FF]/.test(t) && !/\s/.test(t)) {
+    t = t.replace(/\b\d{1,4}\s*[x×]\s*\d{1,4}\b/gi, "").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+  }
   const featured = /^[★*]/.test(t);
   t = t.replace(/^[★*]\s*/, "");
   const [a, c] = t.split("|").map((s) => s.trim());
@@ -138,6 +142,9 @@ const html = tpl
   .replaceAll("{{COUNT}}", String(videos.length))
   .replaceAll("{{COUNT_V}}", String(nV))
   .replaceAll("{{COUNT_H}}", String(videos.length - nV))
+  .replaceAll("{{HIDE_V}}", nV ? "" : " hidden")
+  .replaceAll("{{HIDE_H}}", videos.length - nV ? "" : " hidden")
+  .replaceAll("{{HIDE_SEG}}", nV && videos.length - nV ? "" : " hidden")
   .replaceAll("{{YEAR}}", String(new Date().getFullYear()))
   .replace("{{PRECONNECT}}", DEMO ? "" : `<link rel="preconnect" href="https://${CDN}" crossorigin>`)
   .replace("{{CSS}}", minCss.replaceAll("{{ACCENT}}", b.accent))

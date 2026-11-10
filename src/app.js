@@ -2,7 +2,7 @@
   const D = JSON.parse(document.getElementById("data").textContent);
   const byId = new Map(D.videos.map((v) => [v.id, v]));
   // ready WhatsApp message per video (includes the exact video link)
-  const waFor = (v) => `https://wa.me/${D.wa}?text=${encodeURIComponent(`${D.msg}\n\n🎬 ${v.t}\n${D.site}/?v=${v.id}`)}`;
+  const waFor = (v) => `https://wa.me/${D.wa}?text=${encodeURIComponent(`${D.msg}\n\nالفيديو: ${v.t}\n${D.site}/?v=${v.id}`)}`;
   for (const a of document.querySelectorAll(".card .wa")) {
     const v = byId.get(a.closest(".card").querySelector(".tile").dataset.id);
     if (v) a.href = waFor(v);

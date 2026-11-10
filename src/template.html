@@ -34,15 +34,15 @@
     <p class="lead">{{INTRO}}</p>
     <dl class="stats">
       <div><dt>فيديو</dt><dd>{{COUNT}}</dd></div>
-      <div><dt>طولي</dt><dd>{{COUNT_V}}</dd></div>
-      <div><dt>عرضي</dt><dd>{{COUNT_H}}</dd></div>
+      <div{{HIDE_V}}><dt>طولي</dt><dd>{{COUNT_V}}</dd></div>
+      <div{{HIDE_H}}><dt>عرضي</dt><dd>{{COUNT_H}}</dd></div>
     </dl>
   </section>
 
   <nav class="bar" aria-label="تصفية الأعمال">
     <div class="wrap bar-in">
       <h2 class="bar-t">كل الأعمال</h2>
-      <div class="seg" role="group" aria-label="المقاس">
+      <div class="seg" role="group" aria-label="المقاس"{{HIDE_SEG}}>
         <button type="button" data-f="all" aria-pressed="true">الكل</button>
         <button type="button" data-f="v" aria-pressed="false">طولي</button>
         <button type="button" data-f="h" aria-pressed="false">عرضي</button>
