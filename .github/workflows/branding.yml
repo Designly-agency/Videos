@@ -1,0 +1,51 @@
+name: Convert branding PDFs
+
+# Runs when a PDF is added/changed/deleted in /branding, converts it to WebP pages,
+# and commits the images back. Cloudflare Pages then redeploys the site automatically.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "branding/**"
+      - "tools/convert-branding.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branding
+  cancel-in-progress: false
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          npm install --no-save --no-package-lock sharp@0.33.5
+
+      - name: Convert PDFs
+        run: node tools/convert-branding.mjs
+
+      - name: Commit images
+        run: |
+          git config user.name  "designly-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/branding
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Update branding images"
+            git push
+          fi
