@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{NAME_AR}} {{NAME}} | {{B_TAGLINE}}</title>
+<meta name="description" content="{{B_INTRO}}">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="{{B_SITE_URL}}/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{NAME_AR}} | {{B_TAGLINE}}">
+<meta property="og:description" content="{{B_INTRO}}">
+<meta property="og:url" content="{{B_SITE_URL}}/">
+<meta property="og:image" content="{{B_SITE_URL}}/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/alexandria-ar.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/readex-ar.woff2" as="font" type="font/woff2" crossorigin>
+<style>{{CSS}}</style>
+</head>
+<body>
+{{SPRITE}}
+<header class="top wrap">
+  <a class="logo" href="{{MAIN_SITE}}"><img src="/logo.svg" alt="{{NAME_AR}} {{NAME}}" width="278" height="43"></a>
+  {{TABS}}
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="eyebrow">{{B_TAGLINE}}</p>
+    <h1>{{B_HEADLINE_HTML}}</h1>
+    <p class="lead">{{B_INTRO}}</p>
+    <dl class="stats">
+      <div><dt>مشروع</dt><dd>{{B_COUNT}}</dd></div>
+    </dl>
+  </section>
+
+  <nav class="bar" aria-label="الأعمال">
+    <div class="wrap bar-in">
+      <h2 class="bar-t">كل المشاريع</h2>
+    </div>
+  </nav>
+
+  <section class="wrap" aria-label="الهويات البصرية والشعارات">
+    <ul class="grid bgrid" id="grid">{{CARDS}}</ul>
+    <p class="empty" id="empty"{{HIDE_EMPTY}}>سيتم إضافة الأعمال قريبًا.</p>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <span>© {{YEAR}} {{NAME_AR}} للتصميم والخدمات التسويقية</span>
+  <span><a href="{{MAIN_SITE}}">الموقع</a> · <a href="{{INSTAGRAM}}" target="_blank" rel="noopener">Instagram</a> · <a href="{{TIKTOK}}" target="_blank" rel="noopener">TikTok</a> · <a href="{{X}}" target="_blank" rel="noopener">X</a></span>
+</footer>
+
+<dialog id="doc" class="doc" aria-label="عرض المشروع">
+  <div class="doc-bar">
+    <button type="button" class="x" data-act="close" aria-label="إغلاق">✕</button>
+    <div class="doc-t"><span id="dtag" class="tag"></span><strong id="dtt"></strong></div>
+    <button type="button" data-act="share" class="share">نسخ الرابط</button>
+    <a id="dwa" class="lbwa" href="#" target="_blank" rel="noopener">{{WA_ICON}}<span>أريد تصميمًا مثله</span></a>
+  </div>
+  <div class="doc-pages" id="pages"></div>
+  <div class="doc-end">
+    <a id="dwa2" class="lbwa big" href="#" target="_blank" rel="noopener">{{WA_ICON}}<span>أعجبني، أريد تصميمًا بجودة مقاربة</span></a>
+    <button type="button" data-act="next" class="next">المشروع التالي ←</button>
+  </div>
+</dialog>
+
+<script id="data" type="application/json">{{DATA}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

@@ -13,7 +13,10 @@ import { readFile, writeFile, mkdir, rm, cp } from "node:fs/promises";
 const ROOT = new URL(".", import.meta.url);
 const cfg = JSON.parse(await readFile(new URL("site.config.json", ROOT), "utf8"));
 const { BUNNY_LIBRARY_ID: LIB, BUNNY_API_KEY: KEY, BUNNY_CDN_HOST: CDN } = process.env;
+// SITE=branding builds the logos/identities site; anything else builds the videos site.
+const SITE = process.env.SITE === "branding" ? "branding" : "videos";
 const DEMO = !(LIB && KEY && CDN);
+console.log(`site → ${SITE}`);
 // Diagnostics: show which variables the build can see (names only, never values)
 console.log(
   "env check →",
@@ -108,7 +111,7 @@ function card(v, i) {
 </li>`;
 }
 
-const videos = (await loadVideos()).sort(
+const videos = (SITE === "videos" ? await loadVideos() : []).sort(
   (a, c) => (c.featured - a.featured) || String(c.date).localeCompare(String(a.date))
 );
 const nV = videos.filter((v) => v.vertical).length;
@@ -119,46 +122,108 @@ const clientData = {
   videos: videos.map((v) => ({ id: v.id, t: v.title, p: DEMO ? "" : v.preview, v: v.vertical ? 1 : 0 })),
 };
 
-const [tpl, css, js] = await Promise.all(
-  ["src/template.html", "src/style.css", "src/app.js"].map((f) => readFile(new URL(f, ROOT), "utf8"))
+const [tpl, btpl, css, js, bjs] = await Promise.all(
+  ["src/template.html", "src/branding.html", "src/style.css", "src/app.js", "src/branding.js"].map((f) =>
+    readFile(new URL(f, ROOT), "utf8")
+  )
 );
 
 const minCss = css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*([{}:;,>])\s*/g, "$1").trim();
+const em = (s) => esc(s).replace(/\*(.+?)\*/g, "<em>$1</em>");
+const tabs = (cur) =>
+  `<nav class="tabs" aria-label="الأقسام"><a href="/"${cur === "v" ? ' aria-current="page"' : ""}>الفيديوهات</a><a href="/branding/"${cur === "b" ? ' aria-current="page"' : ""}>الهويات والشعارات</a></nav>`;
 
-const html = tpl
-  .replaceAll("{{NAME_AR}}", esc(b.nameAr || ""))
-  .replaceAll("{{NAME}}", esc(b.name))
-  .replaceAll("{{TIKTOK}}", esc(b.tiktok || ""))
-  .replaceAll("{{X}}", esc(b.x || ""))
+// Shared placeholders for both pages
+const common = (t) =>
+  t
+    .replaceAll("{{NAME_AR}}", esc(b.nameAr || ""))
+    .replaceAll("{{NAME}}", esc(b.name))
+    .replaceAll("{{TIKTOK}}", esc(b.tiktok || ""))
+    .replaceAll("{{X}}", esc(b.x || ""))
+    .replaceAll("{{SITE_URL}}", esc(b.siteUrl))
+    .replaceAll("{{MAIN_SITE}}", esc(b.mainSite))
+    .replaceAll("{{INSTAGRAM}}", esc(b.instagram))
+    .replaceAll("{{WA}}", esc(wa))
+    .replaceAll("{{WA_ICON}}", '<svg width="18" height="18" aria-hidden="true"><use href="#i-wa"/></svg>')
+    .replace("{{SPRITE}}", `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-wa" viewBox="0 0 24 24">${WA_ICON.replace(/^<svg[^>]*>|<\/svg>$/g, "")}</symbol></svg>`)
+    .replaceAll("{{YEAR}}", String(new Date().getFullYear()))
+    .replace("{{CSS}}", minCss.replaceAll("{{ACCENT}}", b.accent));
+
+// ---------- page 1: videos ----------
+const html = common(tpl)
+  .replace("{{TABS}}", `<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">احصل على استشارتك</a>`)
   .replaceAll("{{TAGLINE}}", esc(b.tagline))
-  .replaceAll("{{HEADLINE_HTML}}", esc(b.headline).replace(/\*(.+?)\*/g, "<em>$1</em>"))
+  .replaceAll("{{HEADLINE_HTML}}", em(b.headline))
   .replaceAll("{{INTRO}}", esc(b.intro))
-  .replaceAll("{{SITE_URL}}", esc(b.siteUrl))
-  .replaceAll("{{MAIN_SITE}}", esc(b.mainSite))
-  .replaceAll("{{INSTAGRAM}}", esc(b.instagram))
-  .replaceAll("{{WA}}", esc(wa))
-  .replaceAll("{{WA_ICON}}", '<svg width="18" height="18" aria-hidden="true"><use href="#i-wa"/></svg>')
-  .replace("{{SPRITE}}", `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-wa" viewBox="0 0 24 24">${WA_ICON.replace(/^<svg[^>]*>|<\/svg>$/g, "")}</symbol></svg>`)
   .replaceAll("{{COUNT}}", String(videos.length))
   .replaceAll("{{COUNT_V}}", String(nV))
   .replaceAll("{{COUNT_H}}", String(videos.length - nV))
   .replaceAll("{{HIDE_V}}", nV ? "" : " hidden")
   .replaceAll("{{HIDE_H}}", videos.length - nV ? "" : " hidden")
   .replaceAll("{{HIDE_SEG}}", nV && videos.length - nV ? "" : " hidden")
-  .replaceAll("{{YEAR}}", String(new Date().getFullYear()))
   .replace("{{PRECONNECT}}", DEMO ? "" : `<link rel="preconnect" href="https://${CDN}" crossorigin>`)
-  .replace("{{CSS}}", minCss.replaceAll("{{ACCENT}}", b.accent))
   .replace("{{CARDS}}", videos.map(card).join(""))
   .replace("{{DATA}}", JSON.stringify(clientData).replace(/</g, "\\u003c"))
   .replace("{{JS}}", js);
 
+// ---------- page 2: branding (images produced by tools/convert-branding.mjs) ----------
+const bc = cfg.branding || {};
+const manifestUrl = new URL("public/branding/manifest.json", ROOT);
+let projects = [];
+try {
+  projects = JSON.parse(await readFile(manifestUrl, "utf8")).items || [];
+} catch {}
+projects.sort((a, c) => (c.featured - a.featured) || String(c.date).localeCompare(String(a.date)));
+
+function bcard(p, i) {
+  const [w, h] = p.pages[0];
+  const s = (x) => `/branding/${p.dir}/p01-${x}.webp`;
+  return `<li class="card">
+<button type="button" class="tile" data-id="${p.id}" aria-label="عرض: ${esc(p.title)}">
+<span class="media${w / h > 2.2 || w / h < 0.55 ? " fit" : ""}"><img src="${s(600)}" srcset="${s(600)} 600w, ${s(1200)} 1200w" sizes="(max-width:640px) 50vw, (max-width:1100px) 33vw, 320px" width="${w}" height="${h}" alt="${esc(p.title)}" ${
+    i < 4 ? `fetchpriority="${i === 0 ? "high" : "auto"}"` : 'loading="lazy"'
+  } decoding="async">${p.pages.length > 1 ? `<span class="pc">${p.pages.length} ${p.pages.length <= 10 ? "صفحات" : "صفحة"}</span>` : ""}</span>
+</button>
+<div class="meta"><div class="txt">${p.client ? `<span class="tag">${esc(p.client)}</span>` : ""}<span class="ttl">${esc(p.title)}</span></div>
+<a class="wa" href="https://wa.me/${b.whatsapp}" target="_blank" rel="noopener" aria-label="أريد تصميمًا مثل: ${esc(p.title)}" title="أريد تصميمًا مثله"><svg width="18" height="18" aria-hidden="true"><use href="#i-wa"/></svg></a></div>
+</li>`;
+}
+
+const bData = {
+  wa: b.whatsapp, msg: bc.message, site: bc.siteUrl,
+  items: projects.map((p) => ({ id: p.id, dir: p.dir, t: p.title, c: p.client, pg: p.pages })),
+};
+const bhtml = common(btpl)
+  .replace("{{TABS}}", "")
+  .replaceAll("{{B_SITE_URL}}", esc(bc.siteUrl || ""))
+  .replaceAll("{{B_TAGLINE}}", esc(bc.tagline || ""))
+  .replaceAll("{{B_HEADLINE_HTML}}", em(bc.headline || ""))
+  .replaceAll("{{B_INTRO}}", esc(bc.intro || ""))
+  .replaceAll("{{B_COUNT}}", String(projects.length))
+  .replaceAll("{{HIDE_EMPTY}}", projects.length ? " hidden" : "")
+  .replace("{{CARDS}}", projects.map(bcard).join(""))
+  .replace("{{DATA}}", JSON.stringify(bData).replace(/</g, "\\u003c"))
+  .replace("{{JS}}", bjs);
+
 await rm(new URL("dist", ROOT), { recursive: true, force: true });
 await mkdir(new URL("dist", ROOT), { recursive: true });
-await cp(new URL("public", ROOT), new URL("dist", ROOT), { recursive: true });
-await writeFile(new URL("dist/index.html", ROOT), html);
+// copy static files; each site only gets what it needs
+await cp(new URL("public", ROOT), new URL("dist", ROOT), {
+  recursive: true,
+  filter: (src) =>
+    SITE === "branding"
+      ? !/og\.jpg$/.test(src)
+      : !src.includes("/public/branding") && !/og-branding\.jpg$/.test(src),
+});
+if (SITE === "branding") {
+  await rm(new URL("dist/branding/manifest.json", ROOT), { force: true });
+  await cp(new URL("public/og-branding.jpg", ROOT), new URL("dist/og.jpg", ROOT)).catch(() => {});
+  await rm(new URL("dist/og-branding.jpg", ROOT), { force: true });
+}
+await writeFile(new URL("dist/index.html", ROOT), SITE === "branding" ? bhtml : html);
 await writeFile(
   new URL("dist/_headers", ROOT),
-  `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/\n  Cache-Control: public, max-age=0, must-revalidate\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/logo.svg\n  Cache-Control: public, max-age=86400\n`
+  `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n/\n  Cache-Control: public, max-age=0, must-revalidate\n/branding/*/*\n  Cache-Control: public, max-age=31536000, immutable\n/favicon.svg\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/logo.svg\n  Cache-Control: public, max-age=86400\n`
 );
 await writeFile(new URL("dist/robots.txt", ROOT), `User-agent: *\nAllow: /\n`);
 await writeFile(
@@ -166,4 +231,8 @@ await writeFile(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0B0B0C"/><text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="40" fill="${b.accent}">D</text></svg>`
 );
 
-console.log(`✓ Built ${videos.length} videos → dist/index.html (${(html.length / 1024).toFixed(1)} KB)`);
+console.log(
+  SITE === "branding"
+    ? `✓ Built ${projects.length} branding projects → dist/index.html (${(bhtml.length / 1024).toFixed(1)} KB)`
+    : `✓ Built ${videos.length} videos → dist/index.html (${(html.length / 1024).toFixed(1)} KB)`
+);
