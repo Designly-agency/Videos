@@ -30,9 +30,13 @@ function parseTitle(name) {
   const featured = /^[★*]/.test(t);
   t = t.replace(/^[★*]\s*/, "");
   if (!/[؀-ۿ]/.test(t) && !/\s/.test(t)) t = t.replace(/[-_]+/g, " ").trim();
-  // "client | title"  or (Windows doesn't allow "|" in file names) "client - title"
-  const m = t.match(/^(.+?)\s*(?:\||\s-\s|\s–\s)\s*(.+)$/);
-  return m ? { client: m[1].trim(), title: m[2].trim(), featured } : { client: "", title: t, featured };
+  // "client | title"  → client shown small in gold above the title
+  // "title - city"     → (Windows can't use "|") the part after the dash is shown small in gold
+  let m = t.match(/^(.+?)\s*\|\s*(.+)$/);
+  if (m) return { client: m[1].trim(), title: m[2].trim(), featured };
+  m = t.match(/^(.+)\s[-–]\s(.+)$/);
+  if (m) return { client: m[2].trim(), title: m[1].trim(), featured };
+  return { client: "", title: t, featured };
 }
 
 function gitDate(file) {
