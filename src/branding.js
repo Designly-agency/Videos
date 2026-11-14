@@ -5,7 +5,7 @@
 
   // Ready WhatsApp message per project (includes the exact project link)
   const waFor = (v) =>
-    `https://wa.me/${D.wa}?text=${encodeURIComponent(`${D.msg}\n\nالمشروع: ${v.c ? v.c + " — " : ""}${v.t}\n${D.site}/?p=${v.id}`)}`;
+        `https://wa.me/${D.wa}?text=${encodeURIComponent(`${D.msg}\n\nالمشروع: ${v.t}${v.c ? " - " + v.c : ""}\n${D.site}/?p=${v.id}`)}`;
   for (const a of document.querySelectorAll(".card .wa")) {
     const v = byId.get(a.closest(".card").querySelector(".tile").dataset.id);
     if (v) a.href = waFor(v);
